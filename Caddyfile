@@ -1,0 +1,31 @@
+{$DOMAIN} {
+	encode zstd gzip
+
+	# Browsers send a CORS preflight without credentials; the app answers it.
+	@preflight method OPTIONS
+	handle @preflight {
+		reverse_proxy app:8000
+	}
+
+	# Your website, scripts, Excel: read-only API access with  X-API-Key: <API_KEY>
+	@machine {
+		header X-API-Key {$API_KEY}
+		method GET HEAD
+		path /api/*
+	}
+	handle @machine {
+		reverse_proxy app:8000 {
+			flush_interval -1
+		}
+	}
+
+	# Everyone else (dashboard, /docs, watchlist editing): username + password
+	handle {
+		basic_auth {
+			{$AUTH_USER} {$AUTH_HASH}
+		}
+		reverse_proxy app:8000 {
+			flush_interval -1
+		}
+	}
+}

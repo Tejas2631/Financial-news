@@ -1,0 +1,39 @@
+# App (private, not exposed) + Caddy (public HTTPS, automatic Let's Encrypt certificate, login).
+services:
+  app:
+    build: .
+    restart: unless-stopped
+    user: "${APP_UID:-1000}:${APP_GID:-1000}"
+    environment:
+      CORS_ORIGINS: ${CORS_ORIGINS:-*}
+      FETCH_INTERVAL: ${FETCH_INTERVAL:-60}
+      RETENTION_DAYS: ${RETENTION_DAYS:-14}
+      BACKUP_KEEP: ${BACKUP_KEEP:-7}
+    volumes:
+      - ./data:/data            # news.db, backups/, notify.json, watchlist.json, feeds.json
+    expose:
+      - "8000"
+
+  caddy:
+    image: caddy:2
+    restart: unless-stopped
+    depends_on:
+      app:
+        condition: service_healthy
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    environment:
+      DOMAIN: ${DOMAIN:?set DOMAIN in .env}
+      AUTH_USER: ${AUTH_USER:?set AUTH_USER in .env}
+      AUTH_HASH: ${AUTH_HASH:?set AUTH_HASH in .env}
+      API_KEY: ${API_KEY:?set API_KEY in .env}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data         # certificates: keep this volume
+      - caddy_config:/config
+
+volumes:
+  caddy_data:
+  caddy_config:

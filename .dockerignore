@@ -1,0 +1,7 @@
+data/
+.env
+news.db*
+notify.json
+__pycache__/
+tests/
+*.bak

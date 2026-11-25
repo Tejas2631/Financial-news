@@ -1,0 +1,34 @@
+{
+  "channels": [
+    {
+      "type": "telegram",
+      "enabled": true,
+      "bot_token": "123456:ABC-your-bot-token",
+      "chat_id": "your-chat-id",
+      "filter": {
+        "min_priority": "high",
+        "events": ["new", "update"]
+      }
+    },
+    {
+      "type": "telegram",
+      "enabled": false,
+      "bot_token": "123456:ABC-your-bot-token",
+      "chat_id": "your-chat-id",
+      "filter": {
+        "watchlist_only": true,
+        "min_priority": "medium"
+      }
+    },
+    { "type": "discord", "enabled": false, "webhook_url": "https://discord.com/api/webhooks/...", "filter": { "min_priority": "high" } },
+    { "type": "slack", "enabled": false, "webhook_url": "https://hooks.slack.com/services/...", "filter": { "min_priority": "high" } },
+    { "type": "webhook", "enabled": false, "url": "https://your-site.com/news-hook", "secret": "optional-signing-secret", "filter": {} },
+    {
+      "type": "email", "enabled": false,
+      "smtp_host": "smtp.gmail.com", "smtp_port": 587,
+      "username": "you@gmail.com", "password": "app-password",
+      "from": "you@gmail.com", "to": ["you@gmail.com"],
+      "filter": { "trends": ["IPO & Listings", "Rates & Policy"] }
+    }
+  ]
+}
